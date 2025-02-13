@@ -1,4 +1,4 @@
-package com.joggim.k_talk.common;
+package com.joggim.ktalk.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
