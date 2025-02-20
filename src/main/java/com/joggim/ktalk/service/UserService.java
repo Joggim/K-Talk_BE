@@ -23,18 +23,6 @@ public class UserService {
         return UserDto.fromEntity(user);
     }
 
-    // 사용자 등록
-    @Transactional
-    public UserDto registerUser(UserDto dto) {
-        if (dto.getUserId() == null || dto.getNickname() == null || dto.getNickname().trim().isEmpty()) {
-            throw new CustomException(ErrorCode.INVALID_REQUEST);
-        }
-
-        User saved = userRepository.findById(dto.getUserId())
-                .orElseGet(() -> userRepository.save(User.toEntity(dto)));
-        return UserDto.fromEntity(saved);
-    }
-
     // 사용자 수정 (닉네임 수정)
     @Transactional
     public UserDto updateNickname(String userId, String nickname) {
