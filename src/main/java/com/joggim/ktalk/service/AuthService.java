@@ -48,7 +48,7 @@ public class AuthService {
     @Transactional
     public TokenDto refreshAccessToken(String refreshToken) {
         if (!validateToken(refreshToken)) {
-            throw new CustomException(ErrorCode.JWT_TOKEN_EXPIRED);
+            throw new CustomException(ErrorCode.JWT_TOKEN_INVALID);
         }
 
         String userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
