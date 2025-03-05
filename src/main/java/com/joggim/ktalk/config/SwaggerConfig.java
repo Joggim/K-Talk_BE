@@ -12,34 +12,25 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
-
     @Bean
-    public OpenAPI customOpenAPI() {
+    public OpenAPI kTalkAPI() {
+
+        // API 문서 정보 설정
+        Info info = new Info()
+                .title("K-Talk API")
+                .description("K-Talk API 명세서")
+                .version("1.0.0");
+
+        // Security Scheme 정의 (JWT 토큰 기반 인증)
+        SecurityScheme jwtScheme = new SecurityScheme()
+                .type(SecurityScheme.Type.HTTP)  // HTTP 기반 인증
+                .scheme("bearer")  // Bearer 방식 사용
+                .bearerFormat("JWT");  // JWT 사용 명시
+
         return new OpenAPI()
-                .info(new Info()
-                        .title("Test API 문서")
-                        .version("1.0")
-                        .description("Test API 문서"));
+                .addServersItem(new Server().url("/"))  // 기본 서버 설정
+                .info(info)  // API 문서 정보 추가
+                .addSecurityItem(new SecurityRequirement().addList("BearerAuth"))  // JWT 인증 적용
+                .components(new Components().addSecuritySchemes("BearerAuth", jwtScheme)); // 보안 스키마 설정
     }
-//    @Bean
-//    public OpenAPI kTalkAPI() {
-//
-//        // API 문서 정보 설정
-//        Info info = new Info()
-//                .title("K-Talk API")
-//                .description("K-Talk API 명세서")
-//                .version("1.0.0");
-//
-//        // Security Scheme 정의 (JWT 토큰 기반 인증)
-//        SecurityScheme jwtScheme = new SecurityScheme()
-//                .type(SecurityScheme.Type.HTTP)  // HTTP 기반 인증
-//                .scheme("bearer")  // Bearer 방식 사용
-//                .bearerFormat("JWT");  // JWT 사용 명시
-//
-//        return new OpenAPI()
-//                .addServersItem(new Server().url("/"))  // 기본 서버 설정
-//                .info(info)  // API 문서 정보 추가
-//                .addSecurityItem(new SecurityRequirement().addList("BearerAuth"))  // JWT 인증 적용
-//                .components(new Components().addSecuritySchemes("BearerAuth", jwtScheme)); // 보안 스키마 설정
-//    }
 }
