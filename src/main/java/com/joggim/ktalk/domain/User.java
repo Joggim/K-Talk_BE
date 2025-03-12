@@ -1,10 +1,10 @@
 package com.joggim.ktalk.domain;
 
 import com.joggim.ktalk.dto.UserDto;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,8 +20,19 @@ public class User {
     @Column(nullable = false)
     private String nickname;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatRoom> chatRooms;
+
+    public User (String userId, String nickname) {
+        this.userId = userId;
+        this.nickname = nickname;
+    }
+
     public static User toEntity(UserDto dto) {
-        return new User(dto.getUserId(), dto.getNickname());
+        return User.builder()
+                .userId(dto.getUserId())
+                .nickname(dto.getNickname())
+                .build();
     }
 
 }
