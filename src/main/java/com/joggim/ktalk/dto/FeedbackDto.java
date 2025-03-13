@@ -10,28 +10,23 @@ import java.util.List;
 @AllArgsConstructor
 public class FeedbackDto {
 
-    private String originalText;
+    private Long sentenceId;
 
-    private String recognizedText;
+    private boolean passed; // 통과 여부
 
-    private double accuracy;
+    private String userText;
 
-    private FeedbackDetail feedback;
+    private String userAudioUrl;
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class FeedbackDetail {
-        private List<PronunciationError> errors;
-        private String explanation; // 텍스트 형태의 피드백 메시지
-    }
+    private List<PronunciationError> pronunciationErrors;
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     public static class PronunciationError {
-        private String character; // 오류가 있는 글자
-        private int index; // 위치
+        private String wrong; // 틀린 글자
+        private String correct; // 정답 글자
+        private int index; // 틀린 글자 위치 위치
     }
 
 }
