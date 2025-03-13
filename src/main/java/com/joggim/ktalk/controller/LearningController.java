@@ -19,11 +19,11 @@ public class LearningController {
     @PostMapping("/feedback")
     public ResponseEntity<ApiResponse<FeedbackDto>> evaluatePronunciation(
             @RequestPart("audio") MultipartFile audioFile,
-            @RequestPart(value = "text", required = false) String text) {
-        FeedbackDto response = feedbackService.getFeedback(audioFile, text);
+            @RequestPart(value = "sentence", required = false) String sentence) {
+        FeedbackDto response = feedbackService.getFeedback(audioFile, sentence);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.success("학습 피드백 성공!", response));
+                .body(ApiResponse.success("발음 피드백 성공!", response));
     }
 
 }
