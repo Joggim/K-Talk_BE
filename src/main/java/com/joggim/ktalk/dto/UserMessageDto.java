@@ -16,21 +16,34 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserMessageDto {
 
+    private Long chatRoomId; // 대화방 ID
     private String type = "sent";  // 메시지 유형
     private String content;  // 메시지 내용
     private String userAudioUrl;  // 사용자가 보낸 오디오 URL
     private String modelAudioUrl;  // 모델의 오디오 URL
     private ChatFeedbackDto feedback; // 피드백
 
+    // 대화방 생성 시 chatRoomId를 포함하여 생성
+    public UserMessageDto(UserMessage userMessage, Long chatRoomId) {
+        this.chatRoomId = chatRoomId;  // 대화방 ID 포함
+        setCommonFields(userMessage);
+    }
+
+    // 기존 대화방에서 메시지 보낼 때는 chatRoomId를 포함하지 않음
     public UserMessageDto(UserMessage userMessage) {
+        setCommonFields(userMessage);  // chatRoomId는 포함하지 않음
+    }
+
+    private void setCommonFields(UserMessage userMessage) {
         this.content = userMessage.getContent();
         this.userAudioUrl = userMessage.getUserAudio();
         this.modelAudioUrl = userMessage.getCorrectAudio();
 
+        // 피드백 처리
         if (userMessage.getGrammarFeedback() != null || userMessage.getPronunciationFeedback() != null) {
             this.feedback = new ChatFeedbackDto(userMessage.getGrammarFeedback(), userMessage.getPronunciationFeedback());
         } else {
-            this.feedback = null; // grammar와 pronunciation 둘 다 null일 경우 feedback null
+            this.feedback = null;
         }
     }
 
