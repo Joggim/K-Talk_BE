@@ -24,14 +24,18 @@ public class UserMessageDto {
     private ChatFeedbackDto feedback; // 피드백
 
     // 대화방 생성 시 chatRoomId를 포함하여 생성
-    public UserMessageDto(UserMessage userMessage, Long chatRoomId) {
-        this.chatRoomId = chatRoomId;  // 대화방 ID 포함
-        setCommonFields(userMessage);
+    public static UserMessageDto of(UserMessage userMessage, Long chatRoomId) {
+        UserMessageDto dto = new UserMessageDto();
+        dto.chatRoomId = chatRoomId;
+        dto.setCommonFields(userMessage);
+        return dto;
     }
 
     // 기존 대화방에서 메시지 보낼 때는 chatRoomId를 포함하지 않음
-    public UserMessageDto(UserMessage userMessage) {
-        setCommonFields(userMessage);  // chatRoomId는 포함하지 않음
+    public static UserMessageDto of(UserMessage userMessage) {
+        UserMessageDto dto = new UserMessageDto();
+        dto.setCommonFields(userMessage);
+        return dto;
     }
 
     private void setCommonFields(UserMessage userMessage) {
@@ -50,6 +54,7 @@ public class UserMessageDto {
     @Getter
     @Setter
     @NoArgsConstructor
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class ChatFeedbackDto {
         private GrammarFeedbackDto grammar;
         private PronunciationFeedbackDto pronunciation;
@@ -82,10 +87,8 @@ public class UserMessageDto {
     @NoArgsConstructor
     public static class PronunciationFeedbackDto {
         private JsonNode pronunciationErrors;
-        private String explanation;
 
         public PronunciationFeedbackDto(PronunciationFeedback pronunciationFeedback) {
-            this.explanation = pronunciationFeedback.getExplanation();
             try {
                 // 문자열로 저장된 pronunciationErrors를 JSON 형식으로 파싱
                 ObjectMapper objectMapper = new ObjectMapper();

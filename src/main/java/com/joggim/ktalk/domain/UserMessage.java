@@ -31,12 +31,10 @@ public class UserMessage {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "grammar_feedback_id")
+    @OneToOne(mappedBy = "userMessage", cascade = CascadeType.ALL, orphanRemoval = true)
     private GrammarFeedback grammarFeedback; // 문법 피드백
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "pronunciation_feedback_id")
+    @OneToOne(mappedBy = "userMessage", cascade = CascadeType.ALL, orphanRemoval = true)
     private PronunciationFeedback pronunciationFeedback; // 발음 피드백
 
     public UserMessage(ChatRoom chatRoom, String content, String userAudio) {
