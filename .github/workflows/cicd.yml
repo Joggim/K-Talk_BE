@@ -75,5 +75,7 @@ jobs:
             docker image rm ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }} || true
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
             docker run -d -p 8080:8080 \
-              --env-file /home/ubuntu/k-talk/.env \
-              --name ktalk-server ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
+            --env-file /home/ubuntu/k-talk/.env \
+            --name ktalk-server \
+            --restart=always \
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
