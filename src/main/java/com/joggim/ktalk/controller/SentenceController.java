@@ -22,8 +22,8 @@ public class SentenceController {
     private FeedbackService feedbackService;
 
     @GetMapping("/{sentenceId}")
-    public ResponseEntity<ApiResponse<SentenceDto.SentenceDetail>> getSentenceById(@PathVariable Long sentenceId) {
-        SentenceDto.SentenceDetail sentence = sentenceService.getSentenceById(sentenceId);
+    public ResponseEntity<ApiResponse<SentenceDto>> getSentenceById(@PathVariable Long sentenceId) {
+        SentenceDto sentence = sentenceService.getSentenceById(sentenceId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("문장 조회 성공!", sentence));
