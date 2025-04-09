@@ -34,8 +34,8 @@ public class TopicController {
     }
 
     @GetMapping("/{topicId}/sentences")
-    public ResponseEntity<ApiResponse<List<SentenceDto.SentenceSummary>>> getSentenceByTopic(@PathVariable Long topicId) {
-        List<SentenceDto.SentenceSummary> sentences = sentenceService.getSentencesByTopic(topicId);
+    public ResponseEntity<ApiResponse<List<SentenceDto>>> getSentenceByTopic(@PathVariable Long topicId) {
+        List<SentenceDto> sentences = sentenceService.getSentencesByTopic(topicId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("문장 목록 조회 성공!", sentences));

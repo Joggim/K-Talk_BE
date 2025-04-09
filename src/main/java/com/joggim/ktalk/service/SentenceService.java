@@ -17,17 +17,17 @@ public class SentenceService {
     @Autowired
     private SentenceRepository sentenceRepository;
 
-    public SentenceDto.SentenceDetail getSentenceById(Long sentenceId) {
+    public SentenceDto getSentenceById(Long sentenceId) {
         Sentence sentence = sentenceRepository.findById(sentenceId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
-        return SentenceDto.SentenceDetail.fromEntity(sentence);
+        return SentenceDto.fromEntity(sentence);
     }
 
-    public List<SentenceDto.SentenceSummary> getSentencesByTopic(Long topicId) {
+    public List<SentenceDto> getSentencesByTopic(Long topicId) {
         List<Sentence> sentences = sentenceRepository.findByTopicId(topicId);
 
         return sentences.stream()
-                .map(SentenceDto.SentenceSummary::fromEntity)
+                .map(SentenceDto::fromEntity)
                 .collect(Collectors.toList());
     }
 }
