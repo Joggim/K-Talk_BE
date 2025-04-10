@@ -9,6 +9,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FeedbackDto {
 
@@ -23,6 +24,7 @@ public class FeedbackDto {
     private List<PronunciationError> pronunciationErrors;
 
     @Data
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class PronunciationError {
