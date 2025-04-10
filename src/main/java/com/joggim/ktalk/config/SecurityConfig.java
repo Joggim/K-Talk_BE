@@ -33,8 +33,9 @@ public class SecurityConfig {
             CorsConfiguration config = new CorsConfiguration();
             config.setAllowedOrigins(Arrays.asList(
                     "http://localhost:3000",
-                    "https://k-talkk.vercel.app"
-            )); // 클라이언트 도메인
+                    "https://k-talkk.vercel.app",
+                    "https://k-talk-server.com"
+            ));
             config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
             config.setAllowedHeaders(Collections.singletonList("*"));
             config.setAllowCredentials(true);
