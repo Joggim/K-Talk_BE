@@ -34,6 +34,13 @@ public class ChatService {
     @Autowired
     private UserRepository userRepository;
 
+    // 초기 채팅방 생성
+    public void createInitialChatRoom(User user) {
+        if (!chatRoomRepository.existsByUser(user)) {
+            chatRoomRepository.save(new ChatRoom(user));
+        }
+    }
+
     // 채팅방 생성 및 메세지 전송
     @Transactional
     public UserMessageDto createChatRoom(AudioRequestDto audio, String userId) {
