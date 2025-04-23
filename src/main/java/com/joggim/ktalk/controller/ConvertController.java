@@ -38,15 +38,16 @@ public class ConvertController {
     }
 
     // 음성 -> 텍스트 변환
-    @PostMapping("/stt")
-    public ResponseEntity<ApiResponse> convertSTT(@RequestParam("file")MultipartFile audioFile){
+    @PostMapping(value = "/stt", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+
+    public ResponseEntity<ApiResponse<TextDto>> convertSTT(@RequestParam("file")MultipartFile audioFile){
         if (audioFile == null) {
             throw new CustomException(ErrorCode.INVALID_REQUEST);
         }
-        String text = convertService.convertSpeechToText(audioFile);
+        TextDto textDto = convertService.convertSpeechToText(audioFile);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.success("음성 텍스트 변환 성공!", new TextDto(text)));
+                .body(ApiResponse.success("음성 텍스트 변환 성공!", textDto));
     }
 
 }

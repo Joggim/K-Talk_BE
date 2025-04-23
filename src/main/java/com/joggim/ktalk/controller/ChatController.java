@@ -7,10 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,18 +18,27 @@ public class ChatController {
     @Autowired
     private ChatService chatService;
 
-    // 대화 목록 조회
-
-    // 대화 시작
-
     // 채팅방 조회
-    @GetMapping("/{chatRoomId}")
-    public ResponseEntity<ApiResponse<List<Object>>> getMessages(@PathVariable Long chatRoomId) {
-        List<Object> messages = chatService.getMessages(chatRoomId);
+    @GetMapping("/messages")
+    public ResponseEntity<ApiResponse<List<Object>>> getMessages(@AuthenticationPrincipal User principal) {
+        String userId = principal.getUsername();
+        List<Object> messages = chatService.getMessages(userId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("채팅방 조회 성공!", messages));
     }
+
+
+//    // 대화 시작
+//    @PostMapping
+//    public ResponseEntity<ApiResponse<UserMessageDto>> createChatRoom(AudioRequestDto dto, @AuthenticationPrincipal User user) {
+//        String userId = user.getUsername();
+//        UserMessageDto message = chatService.createChatRoom(dto, userId);
+//
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .body(ApiResponse.success("새로운 채팅 생성 성공!", message));
+//    }
 
 }
