@@ -1,6 +1,7 @@
 package com.joggim.ktalk.controller;
 
 import com.joggim.ktalk.common.ApiResponse;
+import com.joggim.ktalk.dto.AudioRequestDto;
 import com.joggim.ktalk.dto.FeedbackDto;
 import com.joggim.ktalk.dto.SentenceDto;
 import com.joggim.ktalk.service.SentenceService;
@@ -10,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/sentences")

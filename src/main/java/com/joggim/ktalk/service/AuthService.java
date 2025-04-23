@@ -27,23 +27,17 @@ public class AuthService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private ChatService chatService;
-
     // 사용자 검증 및 등록
     @Transactional
     public TokenDto authenticateUser(String token) {
+
         GoogleIdToken.Payload payload = googleTokenVerifier.verifyToken(token);
 
         String userId = payload.getSubject();
         String name = (String) payload.get("name");
 
         userRepository.findById(userId)
-                .orElseGet(() -> {
-                    User newUser = userRepository.save(new User(userId, name));
-                    chatService.createInitialChatRoom(newUser); // 가입 시 채팅방 생성
-                    return newUser;
-                });
+                .orElseGet(() -> userRepository.save(new User(userId, name)));
 
         String accessToken = jwtTokenProvider.generateAccessToken(userId);
         String refreshToken = jwtTokenProvider.generateRefreshToken(userId);

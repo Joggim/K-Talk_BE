@@ -14,11 +14,9 @@ import com.joggim.ktalk.repository.UserMessageRepository;
 import com.joggim.ktalk.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 
@@ -33,29 +31,6 @@ public class ChatService {
     private BotMessageRepository botMessageRepository;
     @Autowired
     private UserRepository userRepository;
-
-    // 초기 채팅방 생성
-    public void createInitialChatRoom(User user) {
-        if (!chatRoomRepository.existsByUser(user)) {
-            chatRoomRepository.save(new ChatRoom(user));
-        }
-    }
-
-    // 채팅방 생성 및 메세지 전송
-    @Transactional
-    public UserMessageDto createChatRoom(AudioRequestDto audio, String userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
-        byte[] audioBytes = Base64.getDecoder().decode(audio.getAudio());
-
-        ChatRoom chatRoom = new ChatRoom(user);
-        chatRoom = chatRoomRepository.save(chatRoom);
-
-        UserMessage userMessage = null; // AI 서버 호출
-        // userMessage = userMessageRepository.save(userMessage);
-
-        return UserMessageDto.of(userMessage, chatRoom.getId());
-    }
 
     // 채팅방 조회
     public List<Object> getMessages(Long chatRoomId) {
@@ -77,5 +52,6 @@ public class ChatService {
 
     // 메세지 정렬을 위한 임시 데이터 구조
     private record MessageWithTimestamp(Object message, LocalDateTime createdAt) {}
+
 
 }
