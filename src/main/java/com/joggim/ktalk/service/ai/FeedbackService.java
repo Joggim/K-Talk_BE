@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joggim.ktalk.common.exception.CustomException;
 import com.joggim.ktalk.common.exception.ErrorCode;
 import com.joggim.ktalk.domain.Sentence;
+import com.joggim.ktalk.dto.AudioRequestDto;
 import com.joggim.ktalk.dto.FeedbackDto;
 import com.joggim.ktalk.repository.SentenceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -34,22 +35,18 @@ public class FeedbackService {
     @Value("${AI_SERVER_URL}")
     private String aiServerUrl;
 
-    public FeedbackDto getFeedback(MultipartFile audioFile, Long sentenceId) {
+    public FeedbackDto getFeedback(AudioRequestDto audio, Long sentenceId) {
 
         Sentence sentence = sentenceRepository.findById(sentenceId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
         String reference = sentence.getKorean();
 
-        ByteArrayResource resource;
-        try {
-            resource = new ByteArrayResource(audioFile.getBytes()) {
-                @Override
-                public String getFilename() {
-                    return audioFile.getOriginalFilename();  // 또는 "audio.wav"
-                }
-            };
-        } catch (IOException e) {
-            throw new CustomException(ErrorCode.FILE_CONVERT_FAIL);  // 예외 정의해두면 좋아요
-        }
+        byte[] audioBytes = Base64.getDecoder().decode(audio.getAudio());
+        ByteArrayResource resource = new ByteArrayResource(audioBytes) {
+            @Override
+            public String getFilename() {
+                return "audio.wav";
+            }
+        };
 
         MultiValueMap<String, Object> request = new LinkedMultiValueMap<>();
         request.add("file", resource);
@@ -63,7 +60,7 @@ public class FeedbackService {
 
         RestTemplate restTemplate = new RestTemplate();
         try {
-            String FeedbackUrl = aiServerUrl + "/feedback/pronunciation";
+            String FeedbackUrl = aiServerUrl + "/evaluate";
             ResponseEntity<Map> response = restTemplate.postForEntity(
                     FeedbackUrl,
                     requestEntity,
