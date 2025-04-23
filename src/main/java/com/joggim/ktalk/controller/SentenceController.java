@@ -1,7 +1,6 @@
 package com.joggim.ktalk.controller;
 
 import com.joggim.ktalk.common.ApiResponse;
-import com.joggim.ktalk.dto.AudioRequestDto;
 import com.joggim.ktalk.dto.FeedbackDto;
 import com.joggim.ktalk.dto.SentenceDto;
 import com.joggim.ktalk.service.SentenceService;
@@ -10,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/sentences")
@@ -30,8 +30,8 @@ public class SentenceController {
     }
 
     @PostMapping("/{sentenceId}/feedback")
-    public ResponseEntity<ApiResponse<FeedbackDto>> getFeedback(@PathVariable Long sentenceId, @RequestBody AudioRequestDto audio) {
-        FeedbackDto feedback = feedbackService.getFeedback(audio, sentenceId);
+    public ResponseEntity<ApiResponse<FeedbackDto>> getFeedback(@PathVariable Long sentenceId, @RequestPart("file") MultipartFile audioFile) {
+        FeedbackDto feedback = feedbackService.getFeedback(audioFile, sentenceId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("발음 피드백 성공!", feedback));
