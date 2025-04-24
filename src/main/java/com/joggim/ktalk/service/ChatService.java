@@ -42,10 +42,10 @@ public class ChatService {
         List<MessageWithTimestamp> messages = new ArrayList<>();
 
         userMessageRepository.findByChatRoomId(chatRoomId)
-                .forEach(msg -> messages.add(new MessageWithTimestamp(UserMessageDto.of(msg), msg.getCreatedAt())));
+                .forEach(msg -> messages.add(new MessageWithTimestamp(new UserMessageDto.Response(msg), msg.getCreatedAt())));
 
         botMessageRepository.findByChatRoomId(chatRoomId)
-                .forEach(msg -> messages.add(new MessageWithTimestamp(BotMessageDto.of(msg), msg.getCreatedAt())));
+                .forEach(msg -> messages.add(new MessageWithTimestamp(new BotMessageDto.Response(msg), msg.getCreatedAt())));
 
         // createdAt 기준으로 정렬
         messages.sort(Comparator.comparing(MessageWithTimestamp::createdAt).reversed());

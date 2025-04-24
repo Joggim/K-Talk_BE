@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     boolean existsByUser(User user);
+    ChatRoom findTopByUserUserId(String userId);
 }

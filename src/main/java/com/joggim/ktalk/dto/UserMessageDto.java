@@ -2,6 +2,7 @@ package com.joggim.ktalk.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.joggim.ktalk.domain.ChatRoom;
 import com.joggim.ktalk.domain.UserMessage;
 import com.joggim.ktalk.domain.GrammarFeedback;
 import com.joggim.ktalk.domain.PronunciationFeedback;
@@ -10,47 +11,68 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserMessageDto {
 
-    private Long chatRoomId; // 대화방 ID
-    private String type = "sent";  // 메시지 유형
-    private String content;  // 메시지 내용
-    private String userAudioUrl;  // 사용자가 보낸 오디오 URL
-    private String modelAudioUrl;  // 모델의 오디오 URL
-    private ChatFeedbackDto feedback; // 피드백
+    // AI 응답 → 저장용 DTO
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class Save {
+        private String content;
+        private String userAudioUrl;
+        private String modelAudioUrl;
+        private ChatFeedbackDto feedback;
 
-    // 대화방 생성 시 chatRoomId를 포함하여 생성
-    public static UserMessageDto of(UserMessage userMessage, Long chatRoomId) {
-        UserMessageDto dto = new UserMessageDto();
-        dto.chatRoomId = chatRoomId;
-        dto.setCommonFields(userMessage);
-        return dto;
-    }
-
-    // 기존 대화방에서 메시지 보낼 때는 chatRoomId를 포함하지 않음
-    public static UserMessageDto of(UserMessage userMessage) {
-        UserMessageDto dto = new UserMessageDto();
-        dto.setCommonFields(userMessage);
-        return dto;
-    }
-
-    private void setCommonFields(UserMessage userMessage) {
-        this.content = userMessage.getContent();
-        this.userAudioUrl = userMessage.getUserAudio();
-        this.modelAudioUrl = userMessage.getCorrectAudio();
-
-        // 피드백 처리
-        if (userMessage.getGrammarFeedback() != null || userMessage.getPronunciationFeedback() != null) {
-            this.feedback = new ChatFeedbackDto(userMessage.getGrammarFeedback(), userMessage.getPronunciationFeedback());
-        } else {
-            this.feedback = null;
+        public UserMessage toEntity(ChatRoom chatRoom) {
+            UserMessage message = new UserMessage(chatRoom, content, userAudioUrl, modelAudioUrl);
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                if (feedback != null) {
+                    message.setFeedback(mapper.writeValueAsString(feedback));
+                }
+            } catch (Exception e) {
+                message.setFeedback(null);
+            }
+            return message;
         }
     }
 
+    // 저장된 메시지 → 조회 응답용 DTO
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class Response {
+        private UUID id;
+        private String type = "sent";
+        private String content;
+        private String userAudioUrl;
+        private String modelAudioUrl;
+        private ChatFeedbackDto feedback;
+
+        public Response(UserMessage entity) {
+            this.id = entity.getId();
+            this.content = entity.getContent();
+            this.userAudioUrl = entity.getUserAudioUrl();
+            this.modelAudioUrl = entity.getModelAudioUrl();
+
+            if (entity.getFeedback() != null) {
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    this.feedback = mapper.readValue(entity.getFeedback(), ChatFeedbackDto.class);
+                } catch (Exception e) {
+                    this.feedback = null;
+                }
+            }
+        }
+    }
+
+    // 공통 구조
     @Getter
     @Setter
     @NoArgsConstructor
@@ -58,15 +80,6 @@ public class UserMessageDto {
     public static class ChatFeedbackDto {
         private GrammarFeedbackDto grammar;
         private PronunciationFeedbackDto pronunciation;
-
-        public ChatFeedbackDto(GrammarFeedback grammarFeedback, PronunciationFeedback pronunciationFeedback) {
-            if (grammarFeedback != null) {
-                this.grammar = new GrammarFeedbackDto(grammarFeedback);
-            }
-            if (pronunciationFeedback != null) {
-                this.pronunciation = new PronunciationFeedbackDto(pronunciationFeedback);
-            }
-        }
     }
 
     @Getter
@@ -75,11 +88,6 @@ public class UserMessageDto {
     public static class GrammarFeedbackDto {
         private String suggestion;
         private String explanation;
-
-        public GrammarFeedbackDto(GrammarFeedback grammarFeedback) {
-            this.suggestion = grammarFeedback.getSuggestion();
-            this.explanation = grammarFeedback.getExplanation();
-        }
     }
 
     @Getter
@@ -87,15 +95,5 @@ public class UserMessageDto {
     @NoArgsConstructor
     public static class PronunciationFeedbackDto {
         private JsonNode pronunciationErrors;
-
-        public PronunciationFeedbackDto(PronunciationFeedback pronunciationFeedback) {
-            try {
-                // 문자열로 저장된 pronunciationErrors를 JSON 형식으로 파싱
-                ObjectMapper objectMapper = new ObjectMapper();
-                this.pronunciationErrors = objectMapper.readTree(pronunciationFeedback.getPronunciationErrors());
-            } catch (Exception e) {
-                this.pronunciationErrors = null; // 파싱 중 오류 발생 시 null 처리
-            }
-        }
     }
 }
