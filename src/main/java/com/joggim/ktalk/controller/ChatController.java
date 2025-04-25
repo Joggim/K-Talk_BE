@@ -1,16 +1,19 @@
 package com.joggim.ktalk.controller;
 
 import com.joggim.ktalk.common.ApiResponse;
+import com.joggim.ktalk.domain.ChatRoom;
+import com.joggim.ktalk.dto.BotMessageDto;
+import com.joggim.ktalk.dto.ChatFeedbackRequestDto;
+import com.joggim.ktalk.dto.TextDto;
+import com.joggim.ktalk.dto.UserMessageDto;
 import com.joggim.ktalk.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,18 +24,45 @@ public class ChatController {
     @Autowired
     private ChatService chatService;
 
-    // 대화 목록 조회
-
-    // 대화 시작
-
     // 채팅방 조회
-    @GetMapping("/{chatRoomId}")
-    public ResponseEntity<ApiResponse<List<Object>>> getMessages(@PathVariable Long chatRoomId) {
-        List<Object> messages = chatService.getMessages(chatRoomId);
+    @GetMapping("/messages")
+    public ResponseEntity<ApiResponse<List<Object>>> getMessages(@AuthenticationPrincipal User principal) {
+        String userId = principal.getUsername();
+        List<Object> messages = chatService.getMessages(userId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("채팅방 조회 성공!", messages));
+    }
+
+    // 사용자 메세지 피드백 요청
+    @PostMapping(value = "/feedback", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<UserMessageDto.Response>> processUserMessage(
+            @ModelAttribute ChatFeedbackRequestDto dto,
+            @AuthenticationPrincipal User principal
+    ) {
+        String userId = principal.getUsername();
+        ChatRoom chatRoom = chatService.getChatRoomByUserId(userId);
+
+        UserMessageDto.Response response = chatService.processUserMessage(dto, chatRoom);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("챗봇 피드백 성공!", response));
+    }
+
+    // 챗봇 응답 요청
+    @PostMapping("/reply")
+    public ResponseEntity<ApiResponse<BotMessageDto.Response>> getBotMessage(
+            @RequestBody TextDto textDto,
+            @AuthenticationPrincipal User principal
+    ) {
+        String userId = principal.getUsername();
+        ChatRoom chatRoom = chatService.getChatRoomByUserId(userId);
+
+        BotMessageDto.Response response = chatService.processBotMessage(textDto, chatRoom);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("챗봇 응답 성공!", response));
     }
 
 }

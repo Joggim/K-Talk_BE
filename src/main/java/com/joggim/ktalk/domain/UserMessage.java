@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -14,8 +15,8 @@ import java.time.LocalDateTime;
 public class UserMessage {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "chat_room_id", nullable = false)
@@ -24,23 +25,21 @@ public class UserMessage {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content; // 사용자가 입력한 텍스트
 
-    private String userAudio; // 사용자가 녹음한 음성 URL
+    private String userAudioUrl; // 사용자가 녹음한 음성 URL
 
-    private String correctAudio; // 올바른 바름 음성 URL
+    private String modelAudioUrl; // 올바른 바름 음성 URL
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @OneToOne(mappedBy = "userMessage", cascade = CascadeType.ALL, orphanRemoval = true)
-    private GrammarFeedback grammarFeedback; // 문법 피드백
+    @Column(columnDefinition = "json")
+    private String feedback;
 
-    @OneToOne(mappedBy = "userMessage", cascade = CascadeType.ALL, orphanRemoval = true)
-    private PronunciationFeedback pronunciationFeedback; // 발음 피드백
-
-    public UserMessage(ChatRoom chatRoom, String content, String userAudio) {
+    public UserMessage(ChatRoom chatRoom, String content, String userAudioUrl, String modelAudioUrl) {
         this.chatRoom = chatRoom;
         this.content = content;
-        this.userAudio = userAudio;
+        this.userAudioUrl = userAudioUrl;
+        this.modelAudioUrl = modelAudioUrl;
         this.createdAt = LocalDateTime.now();
     }
 }
