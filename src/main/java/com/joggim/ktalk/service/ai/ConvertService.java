@@ -1,5 +1,6 @@
 package com.joggim.ktalk.service.ai;
 
+import com.joggim.ktalk.common.util.AudioFileUtil;
 import com.joggim.ktalk.dto.TextDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -38,17 +39,7 @@ public class ConvertService {
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
         // 파일을 ByteArrayResource로 감싸기
-        ByteArrayResource resource;
-        try {
-            resource = new ByteArrayResource(file.getBytes()) {
-                @Override
-                public String getFilename() {
-                    return file.getOriginalFilename(); // "audio.wav"도 가능
-                }
-            };
-        } catch (IOException e) {
-            throw new RuntimeException("파일 처리 실패", e);
-        }
+        ByteArrayResource resource = AudioFileUtil.toByteArrayResource(file);
 
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("file", resource);

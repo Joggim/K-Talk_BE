@@ -3,6 +3,7 @@ package com.joggim.ktalk.service.ai;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joggim.ktalk.common.exception.CustomException;
 import com.joggim.ktalk.common.exception.ErrorCode;
+import com.joggim.ktalk.common.util.AudioFileUtil;
 import com.joggim.ktalk.dto.BotMessageDto;
 import com.joggim.ktalk.dto.ChatFeedbackRequestDto;
 import com.joggim.ktalk.dto.TextDto;
@@ -40,17 +41,7 @@ public class ChatAiService {
         MultipartFile audioFile = dto.getAudioFile();
         String transcription = dto.getTranscription();
 
-        ByteArrayResource audioResource;
-        try {
-            audioResource = new ByteArrayResource(audioFile.getBytes()) {
-                @Override
-                public String getFilename() {
-                    return audioFile.getOriginalFilename();
-                }
-            };
-        } catch (IOException e) {
-            throw new CustomException(ErrorCode.FILE_CONVERT_FAIL);
-        }
+        ByteArrayResource audioResource = AudioFileUtil.toByteArrayResource(audioFile);
 
         MultiValueMap<String, Object> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("file", audioResource);
