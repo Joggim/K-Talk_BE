@@ -65,15 +65,4 @@ public class ChatController {
                 .body(ApiResponse.success("챗봇 응답 성공!", response));
     }
 
-//    // 대화 시작
-//    @PostMapping
-//    public ResponseEntity<ApiResponse<UserMessageDto>> createChatRoom(AudioRequestDto dto, @AuthenticationPrincipal User user) {
-//        String userId = user.getUsername();
-//        UserMessageDto message = chatService.createChatRoom(dto, userId);
-//
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(ApiResponse.success("새로운 채팅 생성 성공!", message));
-//    }
-
 }
