@@ -2,7 +2,9 @@ package com.joggim.ktalk.controller;
 
 import com.joggim.ktalk.common.ApiResponse;
 import com.joggim.ktalk.domain.ChatRoom;
+import com.joggim.ktalk.dto.BotMessageDto;
 import com.joggim.ktalk.dto.ChatFeedbackRequestDto;
+import com.joggim.ktalk.dto.TextDto;
 import com.joggim.ktalk.dto.UserMessageDto;
 import com.joggim.ktalk.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,21 @@ public class ChatController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("챗봇 피드백 성공!", response));
+    }
+
+    // 챗봇 응답 요청
+    @PostMapping("/reply")
+    public ResponseEntity<ApiResponse<BotMessageDto.Response>> getBotMessage(
+            @RequestBody TextDto textDto,
+            @AuthenticationPrincipal User principal
+    ) {
+        String userId = principal.getUsername();
+        ChatRoom chatRoom = chatService.getChatRoomByUserId(userId);
+
+        BotMessageDto.Response response = chatService.processBotMessage(textDto, chatRoom);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("챗봇 응답 성공!", response));
     }
 
 //    // 대화 시작

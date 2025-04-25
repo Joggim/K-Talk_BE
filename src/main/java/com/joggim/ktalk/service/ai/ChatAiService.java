@@ -2,7 +2,9 @@ package com.joggim.ktalk.service.ai;
 
 import com.joggim.ktalk.common.exception.CustomException;
 import com.joggim.ktalk.common.exception.ErrorCode;
+import com.joggim.ktalk.dto.BotMessageDto;
 import com.joggim.ktalk.dto.ChatFeedbackRequestDto;
+import com.joggim.ktalk.dto.TextDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,6 +60,27 @@ public class ChatAiService {
             String url = aiServerUrl + "/chat/feedback";
             ResponseEntity<Map> response = restTemplate.postForEntity(url, requestEntity, Map.class);
             return response.getBody();
+        } catch (RestClientException e) {
+            throw new CustomException(ErrorCode.AI_SERVER_ERROR);
+        }
+    }
+
+    public BotMessageDto.Save requestBotResponse(TextDto textDto) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<TextDto> requestEntity = new HttpEntity<>(textDto, headers);
+
+        try {
+            String url = aiServerUrl + "/chat/reply"; // 예시
+            ResponseEntity<Map> response = restTemplate.postForEntity(url, requestEntity, Map.class);
+            Map<String, Object> body = response.getBody();
+
+            BotMessageDto.Save dto = new BotMessageDto.Save();
+            dto.setContent((String) body.get("content"));
+            dto.setTranslation((String) body.get("translation"));
+            dto.setModelAudioUrl((String) body.get("modelAudioUrl"));
+            return dto;
         } catch (RestClientException e) {
             throw new CustomException(ErrorCode.AI_SERVER_ERROR);
         }

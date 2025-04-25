@@ -1,10 +1,12 @@
 package com.joggim.ktalk.service;
 
+import com.joggim.ktalk.domain.BotMessage;
 import com.joggim.ktalk.domain.ChatRoom;
 import com.joggim.ktalk.domain.User;
 import com.joggim.ktalk.domain.UserMessage;
 import com.joggim.ktalk.dto.BotMessageDto;
 import com.joggim.ktalk.dto.ChatFeedbackRequestDto;
+import com.joggim.ktalk.dto.TextDto;
 import com.joggim.ktalk.dto.UserMessageDto;
 import com.joggim.ktalk.mapper.ChatAiMapper;
 import com.joggim.ktalk.repository.BotMessageRepository;
@@ -77,6 +79,11 @@ public class ChatService {
     }
 
     // 채팅 응답
+    public BotMessageDto.Response processBotMessage(TextDto textDto, ChatRoom chatRoom) {
+        BotMessageDto.Save dto = chatAiService.requestBotResponse(textDto);
+        BotMessage botMessage = botMessageRepository.save(dto.toEntity(chatRoom));
+        return new BotMessageDto.Response(botMessage);
+    }
 
 
     // 메세지 정렬을 위한 임시 데이터 구조
