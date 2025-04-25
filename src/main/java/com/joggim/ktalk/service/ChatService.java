@@ -8,11 +8,9 @@ import com.joggim.ktalk.dto.BotMessageDto;
 import com.joggim.ktalk.dto.ChatFeedbackRequestDto;
 import com.joggim.ktalk.dto.TextDto;
 import com.joggim.ktalk.dto.UserMessageDto;
-import com.joggim.ktalk.mapper.ChatAiMapper;
 import com.joggim.ktalk.repository.BotMessageRepository;
 import com.joggim.ktalk.repository.ChatRoomRepository;
 import com.joggim.ktalk.repository.UserMessageRepository;
-import com.joggim.ktalk.repository.UserRepository;
 import com.joggim.ktalk.service.ai.ChatAiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class ChatService {
@@ -33,11 +30,7 @@ public class ChatService {
     @Autowired
     private BotMessageRepository botMessageRepository;
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private ChatAiService chatAiService;
-    @Autowired
-    private ChatAiMapper chatAiMapper;
 
     // 초기 채팅방 생성
     public void createInitialChatRoom(User user) {
@@ -72,8 +65,7 @@ public class ChatService {
 
     // 채팅 피드백
     public UserMessageDto.Response processUserMessage(ChatFeedbackRequestDto dto, ChatRoom chatRoom) {
-        Map<String, Object> aiResult = chatAiService.requestChatFeedback(dto);
-        UserMessageDto.Save saveDto = chatAiMapper.toUserMessageSaveDto(aiResult);
+        UserMessageDto.Save saveDto = chatAiService.requestChatFeedback(dto);
         UserMessage saved = userMessageRepository.save(saveDto.toEntity(chatRoom));
         return new UserMessageDto.Response(saved);
     }

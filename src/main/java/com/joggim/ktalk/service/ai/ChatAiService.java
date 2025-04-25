@@ -1,10 +1,12 @@
 package com.joggim.ktalk.service.ai;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joggim.ktalk.common.exception.CustomException;
 import com.joggim.ktalk.common.exception.ErrorCode;
 import com.joggim.ktalk.dto.BotMessageDto;
 import com.joggim.ktalk.dto.ChatFeedbackRequestDto;
 import com.joggim.ktalk.dto.TextDto;
+import com.joggim.ktalk.dto.UserMessageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,8 +32,11 @@ public class ChatAiService {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     // 사용자 음성과 텍스트를 AI 서버에 보내 피드백 받기
-    public Map<String, Object> requestChatFeedback(ChatFeedbackRequestDto dto) {
+    public UserMessageDto.Save requestChatFeedback(ChatFeedbackRequestDto dto) {
         MultipartFile audioFile = dto.getAudioFile();
         String transcription = dto.getTranscription();
 
@@ -59,7 +64,17 @@ public class ChatAiService {
         try {
             String url = aiServerUrl + "/chat/feedback";
             ResponseEntity<Map> response = restTemplate.postForEntity(url, requestEntity, Map.class);
-            return response.getBody();
+            Map<String, Object> body = response.getBody();
+
+            UserMessageDto.ChatFeedbackDto feedback = objectMapper.convertValue(body.get("feedback"), UserMessageDto.ChatFeedbackDto.class);
+
+            UserMessageDto.Save saveDto = new UserMessageDto.Save();
+            saveDto.setContent((String) body.get("content"));
+            saveDto.setUserAudioUrl((String) body.get("userAudioUrl"));
+            saveDto.setModelAudioUrl((String) body.get("modelAudioUrl"));
+            saveDto.setFeedback(feedback);
+
+            return saveDto;
         } catch (RestClientException e) {
             throw new CustomException(ErrorCode.AI_SERVER_ERROR);
         }
