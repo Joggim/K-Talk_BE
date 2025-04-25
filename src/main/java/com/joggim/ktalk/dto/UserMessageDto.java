@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joggim.ktalk.domain.ChatRoom;
 import com.joggim.ktalk.domain.UserMessage;
-import com.joggim.ktalk.domain.GrammarFeedback;
-import com.joggim.ktalk.domain.PronunciationFeedback;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

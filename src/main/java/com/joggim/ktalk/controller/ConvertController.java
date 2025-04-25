@@ -39,7 +39,6 @@ public class ConvertController {
 
     // 음성 -> 텍스트 변환
     @PostMapping(value = "/stt", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-
     public ResponseEntity<ApiResponse<TextDto>> convertSTT(@RequestParam("file")MultipartFile audioFile){
         if (audioFile == null) {
             throw new CustomException(ErrorCode.INVALID_REQUEST);
