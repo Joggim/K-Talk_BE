@@ -35,6 +35,9 @@ public class ChatAiService {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private ConvertService convertService;
+
     // 사용자 음성과 텍스트를 AI 서버에 보내 피드백 받기
     public UserMessageDto.Save requestChatFeedback(ChatFeedbackRequestDto dto) {
         MultipartFile audioFile = dto.getAudioFile();
@@ -56,12 +59,14 @@ public class ChatAiService {
             ResponseEntity<Map> response = restTemplate.postForEntity(url, requestEntity, Map.class);
             Map<String, Object> body = response.getBody();
 
+            String modelAudioUrl = convertService.convertTextToSpeech(new TextDto((String) body.get("content")));
+
             UserMessageDto.ChatFeedbackDto feedback = objectMapper.convertValue(body.get("feedback"), UserMessageDto.ChatFeedbackDto.class);
 
             UserMessageDto.Save saveDto = new UserMessageDto.Save();
             saveDto.setContent((String) body.get("content"));
             saveDto.setUserAudioUrl((String) body.get("userAudioUrl"));
-            saveDto.setModelAudioUrl((String) body.get("modelAudioUrl"));
+            saveDto.setModelAudioUrl(modelAudioUrl);
             saveDto.setFeedback(feedback);
 
             return saveDto;
@@ -81,10 +86,12 @@ public class ChatAiService {
             ResponseEntity<Map> response = restTemplate.postForEntity(url, requestEntity, Map.class);
             Map<String, Object> body = response.getBody();
 
+            String modelAudioUrl = convertService.convertTextToSpeech(new TextDto((String) body.get("content")));
+
             BotMessageDto.Save dto = new BotMessageDto.Save();
             dto.setContent((String) body.get("content"));
             dto.setTranslation((String) body.get("translation"));
-            dto.setModelAudioUrl((String) body.get("modelAudioUrl"));
+            dto.setModelAudioUrl(modelAudioUrl);
             return dto;
         } catch (RestClientException e) {
             throw new CustomException(ErrorCode.AI_SERVER_ERROR);
