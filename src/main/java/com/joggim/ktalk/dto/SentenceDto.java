@@ -1,5 +1,6 @@
 package com.joggim.ktalk.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.joggim.ktalk.domain.Sentence;
 import lombok.*;
 
@@ -9,6 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SentenceDto {
 
     private Long id;
