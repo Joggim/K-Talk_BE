@@ -1,0 +1,32 @@
+package com.joggim.ktalk.controller;
+
+import com.joggim.ktalk.common.ApiResponse;
+import com.joggim.ktalk.dto.PronunciationIssueRecommendationDto;
+import com.joggim.ktalk.service.LearningRecommendationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+public class LearningRecommendationController {
+
+    @Autowired
+    private LearningRecommendationService recommendationService;
+
+    @GetMapping("/recommendations")
+    public ResponseEntity<ApiResponse<List<PronunciationIssueRecommendationDto>>> getRecommendations(
+            @AuthenticationPrincipal User principal) {
+
+        String userId = principal.getUsername();
+        List<PronunciationIssueRecommendationDto> result = recommendationService.getRecommendations(userId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("학습 추천 경로 조회 성공!",result));
+    }
+}
