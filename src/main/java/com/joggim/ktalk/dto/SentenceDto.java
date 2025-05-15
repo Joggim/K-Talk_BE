@@ -10,20 +10,21 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SentenceDto {
 
     private Long id;
     private String korean;
     private String translation;
     private String audioUrl;
+    private Boolean isPassed;
 
-    public static SentenceDto fromEntity(Sentence sentence) {
+    public static SentenceDto fromEntity(Sentence sentence, Boolean isPassed) {
         return SentenceDto.builder()
                 .id(sentence.getId())
                 .korean(sentence.getKorean())
                 .translation(sentence.getTranslation())
                 .audioUrl(sentence.getAudioUrl())
+                .isPassed(isPassed)
                 .build();
     }
 
