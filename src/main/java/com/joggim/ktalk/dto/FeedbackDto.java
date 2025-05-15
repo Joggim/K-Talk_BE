@@ -23,14 +23,4 @@ public class FeedbackDto {
 
     private List<PronunciationError> pronunciationErrors;
 
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class PronunciationError {
-        private String wrong; // 틀린 글자
-        private String correct; // 정답 글자
-        private int index; // 틀린 글자 위치 위치
-    }
-
 }

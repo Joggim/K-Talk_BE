@@ -6,6 +6,7 @@ import com.joggim.ktalk.common.exception.CustomException;
 import com.joggim.ktalk.common.exception.ErrorCode;
 import com.joggim.ktalk.domain.Sentence;
 import com.joggim.ktalk.dto.FeedbackDto;
+import com.joggim.ktalk.dto.PronunciationError;
 import com.joggim.ktalk.repository.SentenceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -73,7 +74,7 @@ public class FeedbackService {
             FeedbackDto feedbackDto = FeedbackDto
                     .builder()
                     .userText((String) response.getBody().get("userText"))
-                    .pronunciationErrors((List<FeedbackDto.PronunciationError>) response.getBody().get("pronunciationErrors"))
+                    .pronunciationErrors((List<PronunciationError>) response.getBody().get("pronunciationErrors"))
                     .passed((boolean) response.getBody().get("passed"))
                     .build();
             return feedbackDto;
