@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Slf4j
 @Service
 public class LearningHistoryService {
 
@@ -32,11 +31,9 @@ public class LearningHistoryService {
     private SentenceRepository sentenceRepository;
 
     public void saveLearningResult(String userId, FeedbackDto feedback) {
-        log.error(feedback.getSentenceId().toString());
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Sentence sentence = sentenceRepository.findById(feedback.getSentenceId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
-        log.info(user.toString());
         LearningHistory history = LearningHistory.builder()
                 .user(user)
                 .sentence(sentence)
@@ -56,7 +53,7 @@ public class LearningHistoryService {
         historyRepository.save(history);
     }
 
-    public List<LearningHistoryDto> getHistory(String userId) {
+    public List<LearningHistoryDto> getHistoryByUserId(String userId) {
         return historyRepository.findByUserUserIdOrderByStudiedAtDesc(userId).stream()
                 .map(LearningHistoryDto::fromEntity)
                 .toList();

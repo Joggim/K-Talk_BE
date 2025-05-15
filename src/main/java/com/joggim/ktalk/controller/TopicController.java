@@ -8,6 +8,8 @@ import com.joggim.ktalk.service.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,8 +36,9 @@ public class TopicController {
     }
 
     @GetMapping("/{topicId}/sentences")
-    public ResponseEntity<ApiResponse<List<SentenceDto>>> getSentenceByTopic(@PathVariable Long topicId) {
-        List<SentenceDto> sentences = sentenceService.getSentencesByTopic(topicId);
+    public ResponseEntity<ApiResponse<List<SentenceDto>>> getSentenceByTopic(@PathVariable Long topicId, @AuthenticationPrincipal User principal) {
+        String userId = principal.getUsername();
+        List<SentenceDto> sentences = sentenceService.getSentencesByTopic(topicId, userId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("문장 목록 조회 성공!", sentences));

@@ -25,7 +25,7 @@ public class PronunciationIssueRecommendationDto {
             List<Sentence> sentenceList) {
 
         List<SentenceDto> sentenceDtos = sentenceList.stream()
-                .map(SentenceDto::fromEntity)
+                .map(sentence -> SentenceDto.fromEntity(sentence, null))
                 .toList();
 
         return PronunciationIssueRecommendationDto.builder()
