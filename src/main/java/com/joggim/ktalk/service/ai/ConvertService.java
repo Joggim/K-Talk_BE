@@ -67,7 +67,7 @@ public class ConvertService {
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
         try {
-            String sttUrl = aiServerUrl + "/stt/whisper";
+            String sttUrl = aiServerUrl + "/stt/google-stt";
             ResponseEntity<Map> response = restTemplate.postForEntity(sttUrl, requestEntity, Map.class);
 
             // 응답에서 transcription 필드 추출
