@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface SentenceRepository extends JpaRepository<Sentence, Long> {
     List<Sentence> findByTopicId(Long topicId);
+    List<Sentence> findByIssueId(Long issueId);
 }

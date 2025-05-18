@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface UserPronunciationIssueRepository extends JpaRepository<UserPronunciationIssue, Long> {
     List<UserPronunciationIssue> findByUserUserIdOrderByAccuracyAsc(String userId);
+
+    UserPronunciationIssue findByUserUserIdAndIssueId(String userId, Long issueId);
 }
