@@ -1,17 +1,14 @@
 package com.joggim.ktalk.service;
 
-import com.joggim.ktalk.domain.PronunciationIssue;
-import com.joggim.ktalk.domain.Sentence;
 import com.joggim.ktalk.dto.PronunciationIssueDto;
 import com.joggim.ktalk.repository.UserPronunciationIssueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
 import java.util.List;
 
 @Service
-public class LearningRecommendationService {
+public class PronunciationIssueService {
 
     @Autowired
     private UserPronunciationIssueRepository userIssueRepo;
