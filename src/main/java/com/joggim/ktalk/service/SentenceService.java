@@ -45,12 +45,20 @@ public class SentenceService {
 
     public List<SentenceDto> getSentencesByTopic(Long topicId, String userId) {
         List<Sentence> sentences = sentenceRepository.findByTopicId(topicId);
+        return convertToSentenceDtosWithPassStatus(sentences, userId);
+    }
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    public List<SentenceDto> getSentencesByIssue(Long issueId, String userId) {
+        List<Sentence> sentences = sentenceRepository.findByIssueId(issueId);
+        return convertToSentenceDtosWithPassStatus(sentences, userId);
+    }
+
+    private List<SentenceDto> convertToSentenceDtosWithPassStatus(List<Sentence> sentences, String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         List<LearningHistory> histories = learningHistoryRepository.findByUserAndSentenceIn(user, sentences);
 
-        // Map<sentenceId, List<correct 값들>>로 그룹화
         Map<Long, List<Boolean>> sentenceCorrectMap = histories.stream()
                 .collect(Collectors.groupingBy(
                         history -> history.getSentence().getId(),
@@ -60,14 +68,12 @@ public class SentenceService {
         return sentences.stream()
                 .map(sentence -> {
                     List<Boolean> correctList = sentenceCorrectMap.get(sentence.getId());
-
                     Boolean isPassed = null;
                     if (correctList != null) {
-                        isPassed = correctList.contains(true) ? true : false;
+                        isPassed = correctList.contains(true);
                     }
-
                     return SentenceDto.fromEntity(sentence, isPassed);
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 }

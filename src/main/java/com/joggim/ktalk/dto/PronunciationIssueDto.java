@@ -23,11 +23,16 @@ public class PronunciationIssueDto {
         private List<SentenceDto> sentences;
 
         public static Summary from(UserPronunciationIssue issue) {
+            List<SentenceDto> previewSentences = issue.getIssue().getSentences().stream()
+                    .limit(2)
+                    .map(sentence -> SentenceDto.fromEntity(sentence, null))
+                    .toList();
+
             return Summary.builder()
                     .id(issue.getIssue().getId())
                     .title(issue.getIssue().getTitle())
                     .accuracy(issue.getAccuracy())
-                    .sentences(convertSentences(issue.getIssue().getSentences(), 2))
+                    .sentences(previewSentences)
                     .build();
         }
     }
@@ -44,25 +49,15 @@ public class PronunciationIssueDto {
         private List<SentenceDto> recommendedSentences;
         private List<?> errorLogs; // 추후에 넣기
 
-        public static Detail from(UserPronunciationIssue issue) {
+        public static Detail from(UserPronunciationIssue userIssue, List<SentenceDto> sentenceDtos) {
             return Detail.builder()
-                    .id(issue.getIssue().getId())
-                    .title(issue.getIssue().getTitle())
-                    .accuracy(issue.getAccuracy())
-                    .totalErrorCount(0)
-                    .recommendedSentences(convertSentences(issue.getIssue().getSentences(), 0))
-                    .errorLogs(null)
+                    .id(userIssue.getIssue().getId())
+                    .title(userIssue.getIssue().getTitle())
+                    .accuracy(userIssue.getAccuracy())
+                    .totalErrorCount(0) // 추후 계산 로직 반영
+                    .recommendedSentences(sentenceDtos)
+                    .errorLogs(null) // 추후 주입
                     .build();
         }
-    }
-
-    private static List<SentenceDto> convertSentences(List<Sentence> sentences, int limit) {
-        Stream<Sentence> stream = sentences.stream();
-        if (limit > 0) {
-            stream = stream.limit(limit);
-        }
-        return stream
-                .map(sentence -> SentenceDto.fromEntity(sentence, null))
-                .toList();
     }
 }
