@@ -8,6 +8,7 @@ import com.joggim.ktalk.dto.ErrorAnalysisDto;
 import com.joggim.ktalk.dto.FeedbackDto;
 import com.joggim.ktalk.dto.LearningHistoryDto;
 import com.joggim.ktalk.repository.*;
+import com.joggim.ktalk.service.ai.ErrorClassificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

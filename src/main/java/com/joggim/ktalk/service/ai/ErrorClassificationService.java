@@ -1,4 +1,4 @@
-package com.joggim.ktalk.service;
+package com.joggim.ktalk.service.ai;
 
 import com.joggim.ktalk.dto.ErrorAnalysisDto;
 import org.springframework.beans.factory.annotation.Autowired;
