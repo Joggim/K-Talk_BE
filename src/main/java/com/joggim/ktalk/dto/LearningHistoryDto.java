@@ -22,11 +22,14 @@ public class LearningHistoryDto {
     private boolean correct;
     private LocalDateTime studiedAt;
     private List<PronunciationError> pronunciationErrors;
+    private List<String> errorTypes;
 
     public static LearningHistoryDto fromEntity(LearningHistory history) {
         List<PronunciationError> errors = null;
+        List<String> errorTypes = null;
 
         ErrorLog errorLog = history.getErrorLog();
+
         if (errorLog != null && errorLog.getErrors() != null) {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
@@ -39,6 +42,13 @@ public class LearningHistoryDto {
             }
         }
 
+        if (errorLog != null && errorLog.getErrorLogPronunciationIssues() != null) {
+            errorTypes = errorLog.getErrorLogPronunciationIssues().stream()
+                    .map(mapping -> mapping.getIssue().getTitle())
+                    .distinct()
+                    .toList();
+        }
+
         return LearningHistoryDto.builder()
                 .id(history.getId())
                 .sentenceId(history.getSentence().getId())
@@ -47,6 +57,7 @@ public class LearningHistoryDto {
                 .correct(history.isCorrect())
                 .studiedAt(history.getStudiedAt())
                 .pronunciationErrors(errors)
+                .errorTypes(errorTypes)
                 .build();
     }
 }
