@@ -2,6 +2,7 @@ package com.joggim.ktalk.dto;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.joggim.ktalk.domain.ErrorLog;
 import com.joggim.ktalk.domain.LearningHistory;
 import lombok.*;
 
@@ -25,14 +26,16 @@ public class LearningHistoryDto {
     public static LearningHistoryDto fromEntity(LearningHistory history) {
         List<PronunciationError> errors = null;
 
-        if (history.getPronunciationErrors() != null) {
+        ErrorLog errorLog = history.getErrorLog();
+        if (errorLog != null && errorLog.getErrors() != null) {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 errors = objectMapper.readValue(
-                        history.getPronunciationErrors(),
-                        new TypeReference<List<PronunciationError>>() {});
+                        errorLog.getErrors(),
+                        new TypeReference<List<PronunciationError>>() {}
+                );
             } catch (Exception e) {
-                errors = null; // 또는 로깅 등 처리 가능
+                errors = null; // 또는 로깅
             }
         }
 

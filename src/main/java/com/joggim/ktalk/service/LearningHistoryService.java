@@ -3,6 +3,7 @@ package com.joggim.ktalk.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joggim.ktalk.common.exception.CustomException;
 import com.joggim.ktalk.common.exception.ErrorCode;
+import com.joggim.ktalk.domain.ErrorLog;
 import com.joggim.ktalk.domain.LearningHistory;
 import com.joggim.ktalk.domain.Sentence;
 import com.joggim.ktalk.domain.User;
@@ -11,7 +12,6 @@ import com.joggim.ktalk.dto.LearningHistoryDto;
 import com.joggim.ktalk.repository.LearningHistoryRepository;
 import com.joggim.ktalk.repository.SentenceRepository;
 import com.joggim.ktalk.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,13 +41,25 @@ public class LearningHistoryService {
                 .studiedAt(LocalDateTime.now())
                 .build();
 
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            if (feedback.getPronunciationErrors() != null) {
-                history.setPronunciationErrors(mapper.writeValueAsString(feedback.getPronunciationErrors()));
+        historyRepository.save(history);
+
+        if (!feedback.isPassed()) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+
+                ErrorLog errorLog = ErrorLog.builder()
+                        .userText(feedback.getUserText())
+                        .userIpa(feedback.getUserIpa())
+                        .errors(mapper.writeValueAsString(feedback.getPronunciationErrors()))
+                        .history(history)
+                        .build();
+
+                // 오류 유형 불러오고 저장하기
+
+                history.setErrorLog(errorLog);
+            } catch (Exception e) {
+                history.getErrorLog().setErrors(null);
             }
-        } catch (Exception e) {
-            history.setPronunciationErrors(null);
         }
 
         historyRepository.save(history);

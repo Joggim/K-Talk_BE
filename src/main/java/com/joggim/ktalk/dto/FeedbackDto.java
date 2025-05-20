@@ -19,6 +19,8 @@ public class FeedbackDto {
 
     private String userText;
 
+    private String userIpa;
+
     private String userAudioUrl;
 
     private List<PronunciationError> pronunciationErrors;

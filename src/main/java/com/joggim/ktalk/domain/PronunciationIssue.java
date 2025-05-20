@@ -24,4 +24,7 @@ public class PronunciationIssue {
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Sentence> sentences = new ArrayList<>();
 
+    @ManyToMany(mappedBy = "pronunciationIssues")
+    private List<ErrorLog> errorLogs = new ArrayList<>();
+
 }

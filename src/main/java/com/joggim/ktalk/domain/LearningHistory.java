@@ -31,7 +31,7 @@ public class LearningHistory {
     @JoinColumn(name = "sentence_id", nullable = false)
     private Sentence sentence;
 
-    @Column(columnDefinition = "json")
-    private String pronunciationErrors;
+    @OneToOne(mappedBy = "history", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY, optional = true)
+    private ErrorLog errorLog;
 
 }

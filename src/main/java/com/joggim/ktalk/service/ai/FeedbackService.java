@@ -74,6 +74,7 @@ public class FeedbackService {
             FeedbackDto feedbackDto = FeedbackDto
                     .builder()
                     .userText((String) response.getBody().get("userText"))
+                    .userIpa((String) response.getBody().get("userIpa"))
                     .pronunciationErrors((List<PronunciationError>) response.getBody().get("pronunciationErrors"))
                     .passed((boolean) response.getBody().get("passed"))
                     .build();
