@@ -1,6 +1,7 @@
 package com.joggim.ktalk.controller;
 
 import com.joggim.ktalk.common.ApiResponse;
+import com.joggim.ktalk.dto.ErrorLogDto;
 import com.joggim.ktalk.dto.PronunciationIssueDto;
 import com.joggim.ktalk.service.PronunciationIssueService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,5 +39,14 @@ public class PronunciationIssueController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("학습 추천 상세 조회 성공!",result));
+    }
+
+    @GetMapping("/{issueId}/error-logs")
+    public ResponseEntity<ApiResponse<ErrorLogDto>> getErrorLogsByIssue(@PathVariable Long issueId, @AuthenticationPrincipal User principal) {
+        String userId = principal.getUsername();
+        ErrorLogDto result = pronunciationIssueService.getErrorLogsByIssue(issueId, principal.getUsername());
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("오류 로그 조회 성공", result));
     }
 }
