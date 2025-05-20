@@ -31,13 +31,7 @@ public class ErrorLog {
     @JoinColumn(name = "history_id", nullable = false)
     private LearningHistory history;
 
-    @ManyToMany
-    @JoinTable(
-            name = "error_log_pronunciation_issue",
-            joinColumns = @JoinColumn(name = "error_log_id"),
-            inverseJoinColumns = @JoinColumn(name = "pronunciation_issue_id")
-    )
-    private List<PronunciationIssue> pronunciationIssues = new ArrayList<>();
-
+    @OneToMany(mappedBy = "errorLog", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ErrorLogPronunciationIssue> errorLogPronunciationIssues = new ArrayList<>();
 
 }
