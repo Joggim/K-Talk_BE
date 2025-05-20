@@ -1,26 +1,44 @@
 package com.joggim.ktalk.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 import java.util.List;
 
-@Getter
+@Data
+@Builder
 @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class FeedbackDto {
 
     private Long sentenceId;
-
-    private boolean passed; // 통과 여부
-
+    private boolean passed;
     private String userText;
-
-    private String userAudioUrl;
-
+    private String userIpa;
     private List<PronunciationError> pronunciationErrors;
+    private List<ErrorAnalysisDto.FeedbackResponse> errorAnalysis;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Response {
+        private Long sentenceId;
+        private boolean passed; // 통과 여부
+        private String userText;
+        private String userIpa;
+        private List<PronunciationError> pronunciationErrors;
+
+        public static Response from(FeedbackDto dto) {
+            return Response.builder()
+                    .sentenceId(dto.getSentenceId())
+                    .userText(dto.getUserText())
+                    .userIpa(dto.getUserIpa())
+                    .passed(dto.isPassed())
+                    .pronunciationErrors(dto.getPronunciationErrors())
+                    .build();
+        }
+    }
 
 }

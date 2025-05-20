@@ -2,6 +2,7 @@ package com.joggim.ktalk.dto;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.joggim.ktalk.domain.ErrorLog;
 import com.joggim.ktalk.domain.LearningHistory;
 import lombok.*;
 
@@ -21,19 +22,31 @@ public class LearningHistoryDto {
     private boolean correct;
     private LocalDateTime studiedAt;
     private List<PronunciationError> pronunciationErrors;
+    private List<String> errorTypes;
 
     public static LearningHistoryDto fromEntity(LearningHistory history) {
         List<PronunciationError> errors = null;
+        List<String> errorTypes = null;
 
-        if (history.getPronunciationErrors() != null) {
+        ErrorLog errorLog = history.getErrorLog();
+
+        if (errorLog != null && errorLog.getErrors() != null) {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 errors = objectMapper.readValue(
-                        history.getPronunciationErrors(),
-                        new TypeReference<List<PronunciationError>>() {});
+                        errorLog.getErrors(),
+                        new TypeReference<List<PronunciationError>>() {}
+                );
             } catch (Exception e) {
-                errors = null; // 또는 로깅 등 처리 가능
+                errors = null; // 또는 로깅
             }
+        }
+
+        if (errorLog != null && errorLog.getErrorLogPronunciationIssues() != null) {
+            errorTypes = errorLog.getErrorLogPronunciationIssues().stream()
+                    .map(mapping -> mapping.getIssue().getTitle())
+                    .distinct()
+                    .toList();
         }
 
         return LearningHistoryDto.builder()
@@ -44,6 +57,7 @@ public class LearningHistoryDto {
                 .correct(history.isCorrect())
                 .studiedAt(history.getStudiedAt())
                 .pronunciationErrors(errors)
+                .errorTypes(errorTypes)
                 .build();
     }
 }

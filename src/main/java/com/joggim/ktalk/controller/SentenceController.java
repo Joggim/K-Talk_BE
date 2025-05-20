@@ -38,15 +38,14 @@ public class SentenceController {
     }
 
     @PostMapping(value = "/{sentenceId}/feedback", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<FeedbackDto>> getFeedback(@PathVariable Long sentenceId, @RequestPart("file") MultipartFile audioFile, @AuthenticationPrincipal User principal) {
+    public ResponseEntity<ApiResponse<FeedbackDto.Response>> getFeedback(@PathVariable Long sentenceId, @RequestPart("file") MultipartFile audioFile, @AuthenticationPrincipal User principal) {
         String userId = principal.getUsername();
         FeedbackDto feedback = feedbackService.getFeedback(audioFile, sentenceId);
-        feedback.setSentenceId(sentenceId);
         learningHistoryService.saveLearningResult(userId, feedback);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.success("발음 피드백 성공!", feedback));
+                .body(ApiResponse.success("발음 피드백 성공!", FeedbackDto.Response.from(feedback)));
     }
 
 }
