@@ -5,6 +5,7 @@ import lombok.*;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -19,6 +20,9 @@ public class Sentence {
 
     @Column(nullable = false)
     private String translation;
+
+    @Column(columnDefinition = "text")
+    private String ipa;
 
     private String audioUrl;
 

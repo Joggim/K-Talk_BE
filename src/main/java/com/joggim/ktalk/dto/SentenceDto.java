@@ -15,6 +15,7 @@ public class SentenceDto {
     private Long id;
     private String korean;
     private String translation;
+    private String ipa;
     private String audioUrl;
     private Boolean isPassed;
 
@@ -23,6 +24,7 @@ public class SentenceDto {
                 .id(sentence.getId())
                 .korean(sentence.getKorean())
                 .translation(sentence.getTranslation())
+                .ipa(sentence.getIpa())
                 .audioUrl(sentence.getAudioUrl())
                 .isPassed(isPassed)
                 .build();
