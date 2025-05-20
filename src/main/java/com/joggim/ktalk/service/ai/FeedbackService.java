@@ -1,10 +1,11 @@
 package com.joggim.ktalk.service.ai;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joggim.ktalk.common.exception.CustomException;
 import com.joggim.ktalk.common.exception.ErrorCode;
 import com.joggim.ktalk.domain.Sentence;
+import com.joggim.ktalk.dto.ErrorAnalysisDto;
 import com.joggim.ktalk.dto.FeedbackDto;
 import com.joggim.ktalk.dto.PronunciationError;
 import com.joggim.ktalk.repository.SentenceRepository;
@@ -71,14 +72,28 @@ public class FeedbackService {
                     Map.class
             );
 
-            FeedbackDto feedbackDto = FeedbackDto
-                    .builder()
+            ObjectMapper mapper = new ObjectMapper();
+
+            // errorAnalysis 추출 및 변환
+            List<ErrorAnalysisDto.FeedbackResponse> errorAnalysis = mapper.convertValue(
+                    response.getBody().get("errorAnalysis"),
+                    new TypeReference<List<ErrorAnalysisDto.FeedbackResponse>>() {}
+            );
+
+            // pronunciationErrors도 형변환 필요
+            List<PronunciationError> pronunciationErrors = mapper.convertValue(
+                    response.getBody().get("pronunciationErrors"),
+                    new TypeReference<List<PronunciationError>>() {}
+            );
+
+            return FeedbackDto.builder()
+                    .sentenceId(sentenceId)
                     .userText((String) response.getBody().get("userText"))
                     .userIpa((String) response.getBody().get("userIpa"))
-                    .pronunciationErrors((List<PronunciationError>) response.getBody().get("pronunciationErrors"))
+                    .pronunciationErrors(pronunciationErrors)
                     .passed((boolean) response.getBody().get("passed"))
+                    .errorAnalysis(errorAnalysis)
                     .build();
-            return feedbackDto;
         } catch (RestClientException e) {
             throw new CustomException(ErrorCode.AI_SERVER_ERROR);
         }
