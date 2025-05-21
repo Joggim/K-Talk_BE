@@ -49,7 +49,10 @@ public class PronunciationIssueDto {
         private List<SentenceDto> recommendedSentences;
         private List<?> errorLogs; // 추후에 넣기
 
-        public static Detail from(UserPronunciationIssue userIssue, List<SentenceDto> sentenceDtos) {
+        public static Detail from(UserPronunciationIssue userIssue,
+                                  List<SentenceDto> sentenceDtos,
+                                  List<ErrorLogDto.Response> errorLogs,
+                                  int totalErrorCount) {
             return Detail.builder()
                     .id(userIssue.getIssue().getId())
                     .title(userIssue.getIssue().getTitle())

@@ -44,6 +44,9 @@ public class LearningHistoryService {
     @Autowired
     private RecommendationService recommendationService;
 
+    @Autowired
+    private UserPronunciationIssueRepository userPronunciationIssueRepository;
+
     public void saveLearningResult(String userId, FeedbackDto feedback) {
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Sentence sentence = sentenceRepository.findById(feedback.getSentenceId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
@@ -105,6 +108,15 @@ public class LearningHistoryService {
 
                                 return newIssue;
                             });
+
+                    boolean exists = userPronunciationIssueRepository.existsByUserAndIssue(user, issue);
+                    if (!exists) {
+                        UserPronunciationIssue userIssue = new UserPronunciationIssue();
+                        userIssue.setUser(user);
+                        userIssue.setIssue(issue);
+                        userIssue.setAccuracy(0); // accuracy는 이후 계산 로직에서 갱신
+                        userPronunciationIssueRepository.save(userIssue);
+                    }
 
                     ErrorLogPronunciationIssue mapping = ErrorLogPronunciationIssue.builder()
                             .errorLog(errorLog)
