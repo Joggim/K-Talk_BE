@@ -7,8 +7,10 @@ import com.joggim.ktalk.domain.*;
 import com.joggim.ktalk.dto.ErrorAnalysisDto;
 import com.joggim.ktalk.dto.FeedbackDto;
 import com.joggim.ktalk.dto.LearningHistoryDto;
+import com.joggim.ktalk.dto.RecommendedSentenceResponse;
 import com.joggim.ktalk.repository.*;
 import com.joggim.ktalk.service.ai.ErrorClassificationService;
+import com.joggim.ktalk.service.ai.RecommendationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +40,9 @@ public class LearningHistoryService {
 
     @Autowired
     private ErrorClassificationService errorClassificationService;
+
+    @Autowired
+    private RecommendationService recommendationService;
 
     public void saveLearningResult(String userId, FeedbackDto feedback) {
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -78,9 +83,28 @@ public class LearningHistoryService {
                     }
 
                     PronunciationIssue issue = pronunciationIssueRepository.findByTitle(errorType)
-                            .orElseGet(() -> pronunciationIssueRepository.save(
-                                    PronunciationIssue.builder().title(errorType).build()
-                            ));
+                            .orElseGet(() -> {
+                                PronunciationIssue newIssue = PronunciationIssue.builder()
+                                        .title(errorType)
+                                        .build();
+                                pronunciationIssueRepository.save(newIssue);
+
+                                // AI 서버에 추천 문장 요청
+                                List<RecommendedSentenceResponse> recommended = recommendationService.fetchRecommendedSentences(errorType);
+
+                                for (RecommendedSentenceResponse r : recommended) {
+                                    Sentence newSentence = Sentence.builder()
+                                            .korean(r.getContent())
+                                            .translation(r.getTranslation())
+                                            .ipa(r.getIpa())
+                                            .issue(newIssue)
+                                            .build();
+
+                                    sentenceRepository.save(newSentence);
+                                }
+
+                                return newIssue;
+                            });
 
                     ErrorLogPronunciationIssue mapping = ErrorLogPronunciationIssue.builder()
                             .errorLog(errorLog)
