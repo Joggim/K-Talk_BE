@@ -2,11 +2,13 @@ package com.joggim.ktalk.service;
 
 import com.joggim.ktalk.common.exception.CustomException;
 import com.joggim.ktalk.common.exception.ErrorCode;
+import com.joggim.ktalk.domain.ErrorLogPronunciationIssue;
 import com.joggim.ktalk.domain.PronunciationIssue;
 import com.joggim.ktalk.domain.UserPronunciationIssue;
 import com.joggim.ktalk.dto.ErrorLogDto;
 import com.joggim.ktalk.dto.PronunciationIssueDto;
 import com.joggim.ktalk.dto.SentenceDto;
+import com.joggim.ktalk.repository.ErrorLogPronunciationIssueRepository;
 import com.joggim.ktalk.repository.PronunciationIssueRepository;
 import com.joggim.ktalk.repository.UserPronunciationIssueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,9 @@ public class PronunciationIssueService {
     @Autowired
     private SentenceService sentenceService;
 
+    @Autowired
+    private ErrorLogPronunciationIssueRepository errorLogPronunciationIssueRepository;
+
     public List<PronunciationIssueDto.Summary> getRecommendations(String userId) {
         return userIssueRepo.findByUserUserIdOrderByAccuracyAsc(userId).stream()
                 .map(PronunciationIssueDto.Summary::from)
@@ -37,7 +42,16 @@ public class PronunciationIssueService {
 
         List<SentenceDto> sentenceDtos = sentenceService.getSentencesByIssue(issueId, userId);
 
-        return PronunciationIssueDto.Detail.from(userIssue, sentenceDtos);
+        List<ErrorLogPronunciationIssue> mappings = errorLogPronunciationIssueRepository
+                .findByIssueIdAndUserId(issueId, userId);
+
+        List<ErrorLogDto.Response> errorLogDtos = mappings.stream()
+                .map(m -> ErrorLogDto.Response.from(m.getErrorLog(), m.getErrorIndex()))
+                .toList();
+
+        int totalErrorCount = errorLogDtos.size();
+
+        return PronunciationIssueDto.Detail.from(userIssue, sentenceDtos, errorLogDtos, totalErrorCount);
     }
 
     public ErrorLogDto getErrorLogsByIssue(Long issueId, String userId) {

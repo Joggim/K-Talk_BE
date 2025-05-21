@@ -45,16 +45,19 @@ public class PronunciationIssueDto {
         private Long id;
         private String title;
         private int accuracy;
-        private int totalErrorCount;
+        private int totalErrorLogCount;
         private List<SentenceDto> recommendedSentences;
         private List<?> errorLogs; // 추후에 넣기
 
-        public static Detail from(UserPronunciationIssue userIssue, List<SentenceDto> sentenceDtos) {
+        public static Detail from(UserPronunciationIssue userIssue,
+                                  List<SentenceDto> sentenceDtos,
+                                  List<ErrorLogDto.Response> errorLogs,
+                                  int totalErrorLogCount) {
             return Detail.builder()
                     .id(userIssue.getIssue().getId())
                     .title(userIssue.getIssue().getTitle())
                     .accuracy(userIssue.getAccuracy())
-                    .totalErrorCount(0) // 추후 계산 로직 반영
+                    .totalErrorLogCount(0) // 추후 계산 로직 반영
                     .recommendedSentences(sentenceDtos)
                     .errorLogs(null) // 추후 주입
                     .build();

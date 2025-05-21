@@ -7,8 +7,10 @@ import com.joggim.ktalk.domain.*;
 import com.joggim.ktalk.dto.ErrorAnalysisDto;
 import com.joggim.ktalk.dto.FeedbackDto;
 import com.joggim.ktalk.dto.LearningHistoryDto;
+import com.joggim.ktalk.dto.RecommendedSentenceResponse;
 import com.joggim.ktalk.repository.*;
 import com.joggim.ktalk.service.ai.ErrorClassificationService;
+import com.joggim.ktalk.service.ai.RecommendationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +40,12 @@ public class LearningHistoryService {
 
     @Autowired
     private ErrorClassificationService errorClassificationService;
+
+    @Autowired
+    private RecommendationService recommendationService;
+
+    @Autowired
+    private UserPronunciationIssueRepository userPronunciationIssueRepository;
 
     public void saveLearningResult(String userId, FeedbackDto feedback) {
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -73,10 +81,42 @@ public class LearningHistoryService {
                 classifiedErrors.forEach(res -> {
                     String errorType = res.getErrorType();
 
+                    if (errorType == null || errorType.startsWith("None")) {
+                        return;
+                    }
+
                     PronunciationIssue issue = pronunciationIssueRepository.findByTitle(errorType)
-                            .orElseGet(() -> pronunciationIssueRepository.save(
-                                    PronunciationIssue.builder().title(errorType).build()
-                            ));
+                            .orElseGet(() -> {
+                                PronunciationIssue newIssue = PronunciationIssue.builder()
+                                        .title(errorType)
+                                        .build();
+                                pronunciationIssueRepository.save(newIssue);
+
+                                // AI 서버에 추천 문장 요청
+                                List<RecommendedSentenceResponse> recommended = recommendationService.fetchRecommendedSentences(errorType);
+
+                                for (RecommendedSentenceResponse r : recommended) {
+                                    Sentence newSentence = Sentence.builder()
+                                            .korean(r.getContent())
+                                            .translation(r.getTranslation())
+                                            .ipa(r.getIpa())
+                                            .issue(newIssue)
+                                            .build();
+
+                                    sentenceRepository.save(newSentence);
+                                }
+
+                                return newIssue;
+                            });
+
+                    boolean exists = userPronunciationIssueRepository.existsByUserAndIssue(user, issue);
+                    if (!exists) {
+                        UserPronunciationIssue userIssue = new UserPronunciationIssue();
+                        userIssue.setUser(user);
+                        userIssue.setIssue(issue);
+                        userIssue.setAccuracy(0); // accuracy는 이후 계산 로직에서 갱신
+                        userPronunciationIssueRepository.save(userIssue);
+                    }
 
                     ErrorLogPronunciationIssue mapping = ErrorLogPronunciationIssue.builder()
                             .errorLog(errorLog)
