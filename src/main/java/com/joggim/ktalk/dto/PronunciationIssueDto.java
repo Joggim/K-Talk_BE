@@ -51,15 +51,14 @@ public class PronunciationIssueDto {
 
         public static Detail from(UserPronunciationIssue userIssue,
                                   List<SentenceDto> sentenceDtos,
-                                  List<ErrorLogDto.Response> errorLogs,
-                                  int totalErrorLogCount) {
+                                  List<ErrorLogDto.Response> errorLogs) {
             return Detail.builder()
                     .id(userIssue.getIssue().getId())
                     .title(userIssue.getIssue().getTitle())
                     .accuracy(userIssue.getAccuracy())
-                    .totalErrorLogCount(0) // 추후 계산 로직 반영
+                    .totalErrorLogCount(errorLogs.size())
                     .recommendedSentences(sentenceDtos)
-                    .errorLogs(null) // 추후 주입
+                    .errorLogs(errorLogs)
                     .build();
         }
     }
