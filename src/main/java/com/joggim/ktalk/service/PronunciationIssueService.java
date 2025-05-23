@@ -49,9 +49,7 @@ public class PronunciationIssueService {
                 .map(m -> ErrorLogDto.Response.from(m.getErrorLog(), m.getErrorIndex()))
                 .toList();
 
-        int totalErrorCount = errorLogDtos.size();
-
-        return PronunciationIssueDto.Detail.from(userIssue, sentenceDtos, errorLogDtos, totalErrorCount);
+        return PronunciationIssueDto.Detail.from(userIssue, sentenceDtos, errorLogDtos);
     }
 
     public ErrorLogDto getErrorLogsByIssue(Long issueId, String userId) {
