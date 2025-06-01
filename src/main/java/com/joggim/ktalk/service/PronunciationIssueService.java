@@ -12,6 +12,8 @@ import com.joggim.ktalk.repository.ErrorLogPronunciationIssueRepository;
 import com.joggim.ktalk.repository.PronunciationIssueRepository;
 import com.joggim.ktalk.repository.UserPronunciationIssueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,7 +34,9 @@ public class PronunciationIssueService {
     private ErrorLogPronunciationIssueRepository errorLogPronunciationIssueRepository;
 
     public List<PronunciationIssueDto.Summary> getRecommendations(String userId) {
-        return userIssueRepo.findByUserUserIdOrderByAccuracyAsc(userId).stream()
+        Pageable top10 = PageRequest.of(0, 10);
+
+        return userIssueRepo.findTop10ByUserIdOrderByErrorLogCount(userId, top10).stream()
                 .map(PronunciationIssueDto.Summary::from)
                 .toList();
     }
