@@ -93,18 +93,7 @@ public class LearningHistoryService {
                                 pronunciationIssueRepository.save(newIssue);
 
                                 // AI 서버에 추천 문장 요청
-                                List<RecommendedSentenceResponse> recommended = recommendationService.fetchRecommendedSentences(errorType);
-
-                                for (RecommendedSentenceResponse r : recommended) {
-                                    Sentence newSentence = Sentence.builder()
-                                            .korean(r.getContent())
-                                            .translation(r.getTranslation())
-                                            .ipa(r.getIpa())
-                                            .issue(newIssue)
-                                            .build();
-
-                                    sentenceRepository.save(newSentence);
-                                }
+                                recommendationService.fetchAndSaveRecommendedSentencesAsync(errorType, newIssue);
 
                                 return newIssue;
                             });
