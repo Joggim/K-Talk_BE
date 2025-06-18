@@ -2,6 +2,7 @@
 
 **K-Talk**은 **외국인 한국어 학습자를 위한 음성 인식 및 AI 기반 발음 교정 및 회화 연습 서비스**입니다. K-Talk의 백엔드 서버는 Spring Boot 기반의 REST API를 제공합니다.
 
+<br>
 
 ## 📌 주요 기능
 
@@ -11,6 +12,7 @@
 - AI 서버와의 통신 (STT, 발음 평가, 추천)
 - 사용자 맞춤 추천 학습 경로 제공
 
+<br>
 
 ## 🛠️ 기술 스택
 
@@ -25,6 +27,7 @@
 | 문서화 | Swagger (springdoc-openapi)       |
 | 빌드 | Gradle                            |
 
+<br>
 
 ## 📁 프로젝트 구조
 
@@ -44,6 +47,7 @@ src
 │       └── application.properties   # 설정 파일
 ```
 
+<br>
 
 ## ⚙️ 실행 방법 (Docker로 실행)
 
@@ -86,7 +90,6 @@ AI_SERVER_URL=http://[AI_SERVER_HOST]:[PORT]
 - Google: [https://console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials)
     - OAuth 2.0 클라이언트 ID를 생성하고 리디렉션 URI 설정 필요
 
-
 ### 2. JAR 파일 빌드
 ```bash
 ./gradlew build
@@ -111,6 +114,7 @@ docker run --env-file .env -p 8080:8080 ktalk-backend
   - Linux 사용자는 sudo systemctl start docker 등으로 도커 데몬 실행
 - JAR 파일이 없을 경우 COPY 단계에서 빌드 실패가 발생
 
+<br>
 
 ## 🔌 주요 API
 
@@ -138,6 +142,7 @@ docker run --env-file .env -p 8080:8080 ktalk-backend
 - 본 프로젝트는 **이화여자대학교 컴퓨터공학과 졸업프로젝트**로 진행되었습니다.
 - 전체 프로젝트 설명은 [K-Talk 프로젝트 소개 레포지토리](https://github.com/Joggim/team-26-joggim)에서 확인하실 수 있습니다.
 
+<br>
 
 ## 📬 문의
 
