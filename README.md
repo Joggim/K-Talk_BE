@@ -1,6 +1,7 @@
 # K-Talk Backend
 
 **K-Talk**은 **외국인 한국어 학습자를 위한 음성 인식 및 AI 기반 발음 교정 및 회화 연습 서비스**입니다. K-Talk의 백엔드 서버는 Spring Boot 기반의 REST API를 제공합니다.
+> 전체 프로젝트 설명은 [K-Talk 프로젝트 소개 레포지토리](https://github.com/Joggim/team-26-joggim)에서 확인하실 수 있습니다.
 
 <br>
 
@@ -134,16 +135,3 @@ docker run --env-file .env -p 8080:8080 ktalk-backend
 |         | GET | `/api/pronunciation-issue/{issueId}`            | 오류 유형 상세 조회 |
 |         | GET | `/api/pronunciation-issue/{issueId}/error-logs` | 오류 유형별 사용자 발음 기록 |
 > 🔧 전체 API 요청/응답 상세는 Swagger UI(`/swagger-ui/index.html`)에서 확인할 수 있습니다. (서버 실행 시 접근 가능)
-
-<br>
-
-## 🎓 프로젝트 정보
-
-- 본 프로젝트는 **이화여자대학교 컴퓨터공학과 졸업프로젝트**로 진행되었습니다.
-- 전체 프로젝트 설명은 [K-Talk 프로젝트 소개 레포지토리](https://github.com/Joggim/team-26-joggim)에서 확인하실 수 있습니다.
-
-<br>
-
-## 📬 문의
-
-- Contact: [joggim22@gmail.com](mailto:joggim22@gmail.com)
