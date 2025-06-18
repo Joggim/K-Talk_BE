@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/user/learing-history")
+@RequestMapping("/api/user/learning-history")
 @RequiredArgsConstructor
 public class LearningHistoryController {
 
