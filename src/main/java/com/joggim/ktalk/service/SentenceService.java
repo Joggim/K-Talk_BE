@@ -28,6 +28,11 @@ public class SentenceService {
     @Autowired
     private LearningHistoryRepository learningHistoryRepository;
 
+    public Sentence findById(Long sentenceId) {
+        return sentenceRepository.findById(sentenceId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+    }
+
     public SentenceDto getSentenceById(Long sentenceId, String userId) {
         Sentence sentence = sentenceRepository.findById(sentenceId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
@@ -75,5 +80,12 @@ public class SentenceService {
                     return SentenceDto.fromEntity(sentence, isPassed);
                 })
                 .toList();
+    }
+
+    public Sentence updateAudioUrl(Long sentenceId, String audioUrl) {
+        Sentence sentence = sentenceRepository.findById(sentenceId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+
+        sentence.setAudioUrl(audioUrl);
+        return sentenceRepository.save(sentence);
     }
 }
