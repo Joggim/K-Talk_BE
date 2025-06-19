@@ -80,7 +80,7 @@ AI_SERVER_URL=http://[AI_SERVER_HOST]:[PORT]
 - `AWS_SECRET_KEY` : AWS 비밀 키 (Secret Key)
 - `GOOGLE_CLIENT_ID` : Google OAuth2 클라이언트 ID
 - `GOOGLE_CLIENT_SECRET` : Google OAuth2 클라이언트 비밀 키
-- `AI_SERVER_URL` : 발음 평가용 AI 서버 주소 (ex. `http://localhost:8000`)
+- `AI_SERVER_URL` : AI 서버 주소 (ex. `http://localhost:8000`)
 
 필요한 설정은 `application.properties`에서 `.env`를 불러와 사용합니다.
 
@@ -114,6 +114,19 @@ docker run --env-file .env -p 8080:8080 ktalk-backend
   - Windows/macOS 사용자는 Docker Desktop 실행 필요
   - Linux 사용자는 sudo systemctl start docker 등으로 도커 데몬 실행
 - JAR 파일이 없을 경우 COPY 단계에서 빌드 실패가 발생
+
+<br>
+
+## 🗂️ 데이터베이스 구조
+![Image](https://github.com/user-attachments/assets/3490e1bc-eb69-4076-81ff-c3ba20fe828f)
+
+### 🗃️ 초기 데이터 삽입
+루트 디렉토리에 있는 `insert.sql` 파일을 실행하여 초기 학습 주제, 문장 데이터를 삽입합니다.
+
+```bash
+mysql -u [DB_USERNAME] -p [DB_NAME] < insert.sql
+```
+> ⚠️ `insert.sql`을 실행하기 전에 반드시 Spring Boot 서버를 한 번 실행해 JPA에 의해 DB 테이블이 먼저 생성되도록 해야 합니다. 테이블이 없는 상태에서는 삽입이 실패하거나 오류가 발생합니다.
 
 <br>
 
