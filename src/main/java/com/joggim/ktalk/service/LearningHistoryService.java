@@ -81,9 +81,9 @@ public class LearningHistoryService {
                 classifiedErrors.forEach(res -> {
                     String errorType = res.getErrorType();
 
-//                    if (errorType == null || errorType.startsWith("None")) {
-//                        return;
-//                    }
+                    if (errorType == null || errorType.startsWith("None")) {
+                        return;
+                    }
 
                     PronunciationIssue issue = pronunciationIssueRepository.findByTitle(errorType)
                             .orElseGet(() -> {
