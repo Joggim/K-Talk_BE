@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joggim.ktalk.common.exception.CustomException;
 import com.joggim.ktalk.common.exception.ErrorCode;
 import com.joggim.ktalk.common.util.AudioFileUtil;
-import com.joggim.ktalk.dto.BotMessageDto;
-import com.joggim.ktalk.dto.ChatFeedbackRequestDto;
-import com.joggim.ktalk.dto.TextDto;
-import com.joggim.ktalk.dto.UserMessageDto;
+import com.joggim.ktalk.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,11 +72,11 @@ public class ChatAiService {
         }
     }
 
-    public BotMessageDto.Save requestBotResponse(TextDto textDto) {
+    public BotMessageDto.Save requestBotResponse(ChatReplyRequestDto requestDto) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<TextDto> requestEntity = new HttpEntity<>(textDto, headers);
+        HttpEntity<ChatReplyRequestDto> requestEntity = new HttpEntity<>(requestDto, headers);
 
         try {
             String url = aiServerUrl + "/chat/reply"; // 예시

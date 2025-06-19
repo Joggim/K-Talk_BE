@@ -4,10 +4,7 @@ import com.joggim.ktalk.domain.BotMessage;
 import com.joggim.ktalk.domain.ChatRoom;
 import com.joggim.ktalk.domain.User;
 import com.joggim.ktalk.domain.UserMessage;
-import com.joggim.ktalk.dto.BotMessageDto;
-import com.joggim.ktalk.dto.ChatFeedbackRequestDto;
-import com.joggim.ktalk.dto.TextDto;
-import com.joggim.ktalk.dto.UserMessageDto;
+import com.joggim.ktalk.dto.*;
 import com.joggim.ktalk.repository.BotMessageRepository;
 import com.joggim.ktalk.repository.ChatRoomRepository;
 import com.joggim.ktalk.repository.UserMessageRepository;
@@ -72,29 +69,37 @@ public class ChatService {
 
     // 채팅 응답
     public BotMessageDto.Response processBotMessage(TextDto textDto, ChatRoom chatRoom) {
-        BotMessageDto.Save dto = chatAiService.requestBotResponse(textDto);
+        List<ContextDto> context = buildContext(chatRoom);
+
+        ChatReplyRequestDto requestDto = new ChatReplyRequestDto();
+        requestDto.setText(textDto.getText());
+        requestDto.setContext(context);
+
+        BotMessageDto.Save dto = chatAiService.requestBotResponse(requestDto); // ChatRequestDto 받도록 변경
         BotMessage botMessage = botMessageRepository.save(dto.toEntity(chatRoom));
         return new BotMessageDto.Response(botMessage);
+    }
+
+    // 최근 메세지 10개 불러오기
+    public List<ContextDto> buildContext(ChatRoom chatRoom) {
+        List<ContextMessageWithTimestamp> allMessages = new ArrayList<>();
+
+        userMessageRepository.findByChatRoomId(chatRoom.getId())
+                .forEach(m -> allMessages.add(new ContextMessageWithTimestamp("user", m.getContent(), m.getCreatedAt())));
+
+        botMessageRepository.findByChatRoomId(chatRoom.getId())
+                .forEach(m -> allMessages.add(new ContextMessageWithTimestamp("bot", m.getContent(), m.getCreatedAt())));
+
+        return allMessages.stream()
+                .sorted(Comparator.comparing(ContextMessageWithTimestamp::createdAt))
+                .skip(Math.max(0, allMessages.size() - 10))
+                .map(m -> new ContextDto(m.role(), m.content()))
+                .toList();
     }
 
 
     // 메세지 정렬을 위한 임시 데이터 구조
     private record MessageWithTimestamp(Object message, LocalDateTime createdAt) {}
+    private record ContextMessageWithTimestamp(String role, String content, LocalDateTime createdAt) {}
 
-
-//    // 채팅방 생성 및 메세지 전송
-//    @Transactional
-//    public UserMessageDto createChatRoom(AudioRequestDto audio, String userId) {
-//        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-//
-//        byte[] audioBytes = Base64.getDecoder().decode(audio.getAudio());
-//
-//        ChatRoom chatRoom = new ChatRoom(user);
-//        chatRoom = chatRoomRepository.save(chatRoom);
-//
-//        UserMessage userMessage = null; // AI 서버 호출
-//        // userMessage = userMessageRepository.save(userMessage);
-//
-//        return UserMessageDto.of(userMessage, chatRoom.getId());
-//    }
 }
